@@ -1,5 +1,6 @@
 namespace _5KirjastoRyhmatehtava;
 
+
 using Microsoft.Data.Sqlite;
 
 public class LibraryDB
@@ -38,6 +39,20 @@ public class LibraryDB
                     FOREIGN KEY(customerId) REFERENCES Customers(id))";
             CreateLoansTable.ExecuteNonQuery();
         }
+    }
+    public void DeletingABook(string bookName){
+        var connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        var command = connection.CreateCommand();
+        command.CommandText = @"
+        DELETE
+        FROM books
+        WHERE books.name = $name";
+        command.Parameters.AddWithValue("$name", bookName);
+        command.ExecuteNonQuery();
+
+        connection.Close();
     }
 }
 
