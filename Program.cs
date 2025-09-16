@@ -52,6 +52,10 @@ class Program
 
                 case "X":
                     return;
+
+                default:
+                    Console.WriteLine("Väärä valinta. Valitse: L, D, P, O, T, X ");
+                    break;
             }
         }
     }
