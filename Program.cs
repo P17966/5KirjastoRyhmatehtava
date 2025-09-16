@@ -21,12 +21,28 @@ class Program
 
             switch (command)
             {
+                case "L":
+                    Console.WriteLine("Kirjoita kirjan nimi.");
+                    string? titleOfBook = Console.ReadLine();
+                    Console.WriteLine("Kirjoita kirjan tekijän nimi.");
+                    string? authorOfBook = Console.ReadLine();
+                    Console.WriteLine("Kirjoita kirjan genre");
+                    string? category = Console.ReadLine();
+                    if (!string.IsNullOrEmpty(titleOfBook) && !string.IsNullOrEmpty(authorOfBook) && !string.IsNullOrEmpty(category))
+                    {
+                        libraryDB.AddingABook(titleOfBook, authorOfBook, category);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Tarvitsen kaikki tiedot lisätäkseni kirjan.");
+                    }
+                    break;
                 case "D":
                     Console.WriteLine("Minkä kirjan pitäisi poistaa?");
-                    string? kirjanNimi = Console.ReadLine();
-                    if (!string.IsNullOrEmpty(kirjanNimi))
+                    string? booksTitle = Console.ReadLine();
+                    if (!string.IsNullOrEmpty(booksTitle))
                     {
-                        libraryDB.DeletingABook(kirjanNimi);
+                        libraryDB.DeletingABook(booksTitle);
                     }
                     else
                     {
