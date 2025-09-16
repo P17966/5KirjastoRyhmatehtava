@@ -1,7 +1,7 @@
 # 📚 Library Lending System (C# + SQL)
 
 # A command-line application that allows you to manage a small library:
-# add books, lend them to users, return them, and track borrowed books.
+add books, lend them to users, return them, and track borrowed books.
 
 ## 📦 Features
 
