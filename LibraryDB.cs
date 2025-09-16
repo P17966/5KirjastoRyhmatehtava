@@ -1,6 +1,6 @@
 namespace _5KirjastoRyhmatehtava;
 
-
+using System;
 using Microsoft.Data.Sqlite;
 
 public class LibraryDB
@@ -49,13 +49,13 @@ public class LibraryDB
         command.CommandText = @"
         DELETE
         FROM books
-        WHERE books.name = $name";
+        WHERE books.title = $name";
         command.Parameters.AddWithValue("$name", bookName);
         command.ExecuteNonQuery();
 
         connection.Close();
     }
-     public void AddingABook(string title, string author, string category)
+    public void AddingABook(string title, string author, string category)
     {
         using (var connection = new SqliteConnection(_connectionString))
         {
@@ -83,5 +83,25 @@ public class LibraryDB
 
         }
     }
-}
 
+    public bool Connect()       //Luotu tarjoamaan testitiedostoille pääsy tietokantaan.
+    {
+        try
+        {
+            string connectionString = "Data Source=Library.db;";
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();   
+            }
+            
+
+            Console.WriteLine("Yhteys onnistui.");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Yhteysvirhe: " + ex.Message);
+            return false;
+        }
+    }
+}

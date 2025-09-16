@@ -10,8 +10,8 @@ class Program
         {
             Console.WriteLine(
                 "Haluatko lisätä kirjaa (L),\n" +
-                "poistaa kirjaa (D),\n" +
-                "päivittää kirjojen tietoja (P),\n" +
+                "Poistaa kirjaa (D),\n" +
+                "Päivittää kirjojen tietoja (P),\n" +
                 "Lainaa ja palauta kirjoja (O),\n" +
                 "Tarkista kirjan tai henkilön lainatiedot (T) \n" +
                 "vai Lopettaa(X)?"
@@ -43,6 +43,7 @@ class Program
                     if (!string.IsNullOrEmpty(booksTitle))
                     {
                         libraryDB.DeletingABook(booksTitle);
+                        Console.WriteLine("Kirja on poistettu.");
                     }
                     else
                     {
