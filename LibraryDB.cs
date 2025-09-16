@@ -39,5 +39,34 @@ public class LibraryDB
             CreateLoansTable.ExecuteNonQuery();
         }
     }
+
+     public void AddingABook(string title, string author, string category)
+    {
+        using (var connection = new SqliteConnection(_connectionString))
+        {
+            connection.Open();
+            var commandForCheck = connection.CreateCommand();
+            commandForCheck.CommandText = "SELECT id FROM Books WHERE title=@Title";
+            commandForCheck.Parameters.AddWithValue("Title", title);
+
+            object? id = commandForCheck.ExecuteScalar();
+            if (id == null)
+            {
+                var commandForInsert = connection.CreateCommand();
+                commandForInsert.CommandText = "INSERT INTO Books (title, author, category) VALUES (@Title, @Author, @Category)";
+                commandForInsert.Parameters.AddWithValue("Title", title);
+                commandForInsert.Parameters.AddWithValue("Author", author);
+                commandForInsert.Parameters.AddWithValue("Category", category);
+                commandForInsert.ExecuteNonQuery();
+            }
+            else
+            {
+                Console.WriteLine("The book is already in the database.");
+                return;
+            }
+
+
+        }
+    }
 }
 
