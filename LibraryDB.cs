@@ -161,5 +161,25 @@ public class LibraryDB
             }
         }
     }
+
+     public void UpdateBook(string title, string newAuthor, string newCategory)
+    {
+        using (var connection = new SqliteConnection(_connectionString))
+        {
+            connection.Open();
+            var commandForUpdate = connection.CreateCommand();
+            commandForUpdate.CommandText = @"
+            UPDATE Books 
+            SET author = @Author, category = @Category 
+            WHERE title = @Title";
+
+            commandForUpdate.Parameters.AddWithValue("@Author", newAuthor);
+            commandForUpdate.Parameters.AddWithValue("@Category", newCategory);
+            commandForUpdate.Parameters.AddWithValue("@Title", title);
+
+            int rowsAffected = commandForUpdate.ExecuteNonQuery();
+
+        }
+    }
 }
 
