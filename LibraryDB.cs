@@ -55,7 +55,7 @@ public class LibraryDB
 
         connection.Close();
     }
-     public void AddingABook(string title, string author, string category)
+    public void AddingABook(string title, string author, string category)
     {
         using (var connection = new SqliteConnection(_connectionString))
         {
@@ -81,6 +81,84 @@ public class LibraryDB
             }
 
 
+        }
+    }
+    public void BookBorrowing(int bookId, int customerId)
+    {
+        using (var connection = new SqliteConnection(_connectionString))
+        {
+            connection.Open();
+            using (var transaction = connection.BeginTransaction())
+            {
+                var commandForCheckBook = connection.CreateCommand();
+                commandForCheckBook.CommandText = "SELECT id FROM Books WHERE id=$BookId";
+                commandForCheckBook.Parameters.AddWithValue("$BookId", bookId);
+                object? bookExists = commandForCheckBook.ExecuteScalar();
+
+                var commandForCheckCustomer = connection.CreateCommand();
+                commandForCheckCustomer.CommandText = "SELECT id FROM Customers WHERE id=$CustomerId";
+                commandForCheckCustomer.Parameters.AddWithValue("$CustomerId", customerId);
+                object? customerExists = commandForCheckCustomer.ExecuteScalar();
+
+                var commandForCheckLoan = connection.CreateCommand();
+                commandForCheckLoan.CommandText = "SELECT id FROM Loans WHERE bookId=$BookId AND status='borrowed'";
+                commandForCheckLoan.Parameters.AddWithValue("$BookId", bookId);
+                object? loanExists = commandForCheckLoan.ExecuteScalar();
+
+                if (bookExists == null)
+                {
+                    Console.WriteLine("The book does not exist.");
+                    return;
+                }
+                if (customerExists == null)
+                {
+                    Console.WriteLine("The customer does not exist.");
+                    return;
+                }
+                if (loanExists != null)
+                {
+                    Console.WriteLine("The book is already borrowed.");
+                    return;
+                }
+
+                var commandForInsertLoan = connection.CreateCommand();
+                commandForInsertLoan.CommandText = "INSERT INTO Loans (bookId, customerId, status) VALUES ($BookId, $CustomerId, 'borrowed')";
+                commandForInsertLoan.Parameters.AddWithValue("$BookId", bookId);
+                commandForInsertLoan.Parameters.AddWithValue("$CustomerId", customerId);
+                commandForInsertLoan.ExecuteNonQuery();
+
+                transaction.Commit();
+            }
+        }
+    }
+    public void BookReturning(int bookId, int customerId)
+    {
+        using (var connection = new SqliteConnection(_connectionString))
+        {
+            connection.Open();
+            using (var transaction = connection.BeginTransaction())
+            {
+                var commandForCheckLoan = connection.CreateCommand();
+                commandForCheckLoan.CommandText = "SELECT id FROM Loans WHERE bookId=$BookId AND customerId=$CustomerId AND status='borrowed'";
+                commandForCheckLoan.Parameters.AddWithValue("$BookId", bookId);
+                commandForCheckLoan.Parameters.AddWithValue("$CustomerId", customerId);
+                object? loanExists = commandForCheckLoan.ExecuteScalar();
+
+                if (loanExists == null)
+                {
+                    Console.WriteLine("No active loan found for this book and customer.");
+                    return;
+                }
+
+                int loanId = Convert.ToInt32(loanExists);
+
+                var commandForUpdateLoan = connection.CreateCommand();
+                commandForUpdateLoan.CommandText = "UPDATE Loans SET status='returned' WHERE id=$LoanId";
+                commandForUpdateLoan.Parameters.AddWithValue("$LoanId", loanId);
+                commandForUpdateLoan.ExecuteNonQuery();
+
+                transaction.Commit();
+            }
         }
     }
 }
