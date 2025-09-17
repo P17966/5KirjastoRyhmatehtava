@@ -121,8 +121,7 @@ public class LibraryDB
             }
         }
     }
-<<<<<<< HEAD
-=======
+
     public void BookBorrowing(int bookId, int customerId)
     {
         using (var connection = new SqliteConnection(_connectionString))
@@ -222,7 +221,6 @@ public class LibraryDB
         }
     }
 }
->>>>>>> c9163d17849e57a4b83f3f818ad06ab8a3d99e63
 
     public bool Connect()       //Luotu tarjoamaan testitiedostoille pääsy tietokantaan.
     {
