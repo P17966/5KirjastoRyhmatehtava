@@ -79,8 +79,46 @@ public class LibraryDB
                 Console.WriteLine("The book is already in the database.");
                 return;
             }
+        }
+    }
+    
+    public void BorrowedBooks(string name)
+    {
+        using (var connection = new SqliteConnection(_connectionString))
+        {
+            connection.Open();
+            var commandForCheck = connection.CreateCommand();
+            commandForCheck.CommandText =
+            @"SELECT Books.title 
+            FROM Castomers 
+            LEFT JOIN Loans 
+            ON Castomers.id = Loans.customerId
+            LEFT JOIN Books
+            ON Loans.booksId = Books.id
+            WHERE Castomers.name = $Name";
+            commandForCheck.Parameters.AddWithValue("$Name", name);
+            
+            using (var reader = commandForCheck.ExecuteReader())
+            {
+                bool hasBooks = false;
 
+                while (reader.Read())
+                {
+                    if (!hasBooks)
+                    {
+                        Console.WriteLine("Borrowed book(s):");
+                        hasBooks = true;
+                    }
 
+                    string title = reader.GetString(0);
+                    Console.WriteLine(title);
+                }
+
+                if (!hasBooks)
+                {
+                    Console.WriteLine("No borrowed books found.");
+                }
+            }
         }
     }
 
@@ -91,9 +129,9 @@ public class LibraryDB
             string connectionString = "Data Source=Library.db;";
             using (var connection = new SqliteConnection(connectionString))
             {
-                connection.Open();   
+                connection.Open();
             }
-            
+
 
             Console.WriteLine("Yhteys onnistui.");
             return true;
