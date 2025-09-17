@@ -131,5 +131,35 @@ public class LibraryDB
             }
         }
     }
+    public void BookReturning(int bookId, int customerId)
+    {
+        using (var connection = new SqliteConnection(_connectionString))
+        {
+            connection.Open();
+            using (var transaction = connection.BeginTransaction())
+            {
+                var commandForCheckLoan = connection.CreateCommand();
+                commandForCheckLoan.CommandText = "SELECT id FROM Loans WHERE bookId=$BookId AND customerId=$CustomerId AND status='borrowed'";
+                commandForCheckLoan.Parameters.AddWithValue("$BookId", bookId);
+                commandForCheckLoan.Parameters.AddWithValue("$CustomerId", customerId);
+                object? loanExists = commandForCheckLoan.ExecuteScalar();
+
+                if (loanExists == null)
+                {
+                    Console.WriteLine("No active loan found for this book and customer.");
+                    return;
+                }
+
+                int loanId = Convert.ToInt32(loanExists);
+
+                var commandForUpdateLoan = connection.CreateCommand();
+                commandForUpdateLoan.CommandText = "UPDATE Loans SET status='returned' WHERE id=$LoanId";
+                commandForUpdateLoan.Parameters.AddWithValue("$LoanId", loanId);
+                commandForUpdateLoan.ExecuteNonQuery();
+
+                transaction.Commit();
+            }
+        }
+    }
 }
 
