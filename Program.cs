@@ -9,24 +9,24 @@ class Program
         while (true)
         {
             Console.WriteLine(
-                "Haluatko lisätä kirjaa (L),\n" +
-                "Poistaa kirjaa (D),\n" +
-                "Päivittää kirjojen tietoja (P),\n" +
-                "Lainaa ja palauta kirjoja (O),\n" +
-                "Tarkista kirjan tai henkilön lainatiedot (T) \n" +
-                "vai Lopettaa(X)?"
+                "Do you want to add a book (A),\n" +
+                "Remove a book (R),\n" +
+                "Update book information (P),\n" +
+                "Borrow and return books (B),\n" +
+                "Check loan information for a book or person (C) \n" +
+                "or Stop(X)?"
             );
 
             string? command = Console.ReadLine();
 
             switch (command)
             {
-                case "L":
-                    Console.WriteLine("Kirjoita kirjan nimi.");
+                case "A":
+                    Console.WriteLine("Enter the book title.");
                     string? titleOfBook = Console.ReadLine();
-                    Console.WriteLine("Kirjoita kirjan tekijän nimi.");
+                    Console.WriteLine("Write the name of the book's author.");
                     string? authorOfBook = Console.ReadLine();
-                    Console.WriteLine("Kirjoita kirjan genre");
+                    Console.WriteLine("Write the genre of the book");
                     string? category = Console.ReadLine();
                     if (!string.IsNullOrEmpty(titleOfBook) && !string.IsNullOrEmpty(authorOfBook) && !string.IsNullOrEmpty(category))
                     {
@@ -34,20 +34,20 @@ class Program
                     }
                     else
                     {
-                        Console.WriteLine("Tarvitsen kaikki tiedot lisätäkseni kirjan.");
+                        Console.WriteLine("I need all the information to add a book.");
                     }
                     break;
-                case "D":
-                    Console.WriteLine("Minkä kirjan pitäisi poistaa?");
+                case "R":
+                    Console.WriteLine("Which book should be removed?");
                     string? booksTitle = Console.ReadLine();
                     if (!string.IsNullOrEmpty(booksTitle))
                     {
-                        libraryDB.DeletingABook(booksTitle);
-                        Console.WriteLine("Kirja on poistettu.");
+                        libraryDB.RemovingABook(booksTitle);
+                        Console.WriteLine("The book has been removed.");
                     }
                     else
                     {
-                        Console.WriteLine("Kirjan nimi ei voi olla tyhjä.");
+                        Console.WriteLine("Book name cannot be empty.");
                     }
                     break;
 

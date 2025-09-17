@@ -18,12 +18,12 @@ public class KirjastoRyhmatehtavaTests
         Console.WriteLine("Kirja on lisätty.");
     }
 
-    public static void TestDeletingABook()
+    public static void TestRemovingABook()
     {
         var db = new LibraryDB();
         db.Connect();
         db.AddingABook("1984", "George Orwell", "Fiction");
-        db.DeletingABook("1984");
+        db.RemovingABook("1984");
         Console.WriteLine("Kirja on poistettu.");
     }
 }

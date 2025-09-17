@@ -40,7 +40,7 @@ public class LibraryDB
             CreateLoansTable.ExecuteNonQuery();
         }
     }
-    public void DeletingABook(string bookName)
+    public void RemovingABook(string bookName)
     {
         var connection = new SqliteConnection(_connectionString);
         connection.Open();
