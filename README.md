@@ -20,4 +20,11 @@ add books, lend them to users, return them, and track borrowed books.
 - Check who currently has a book
 - List all books borrowed by a specific user
 
+- `LibraryDB.cs`  
+  Main class that handles all database interactions:
+  - `AddingABook()`
+  - `DeletingABook()`
+  - `UpdateBook()`
+  - `BookBorrowing()`
+  - `BookReturning()`
 
