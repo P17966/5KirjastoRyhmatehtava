@@ -11,8 +11,8 @@ class Program
             Console.WriteLine(
                 "Do you want to add a book (A),\n" + //1
                 "Remove a book (R),\n" +             //2
-                "Do you want to add a customer (A),\n" + 
-                "Remove a customer (R),\n" +             
+                "Do you want to add a customer (O),\n" +             //7
+                "Remove a customer (D),\n" +             
                 "Update book information (P),\n" +   //6
                 "Borrow books (B), \n" +             //4
                 "Return books(T),\n" +               //5
@@ -111,6 +111,21 @@ class Program
                     else
                     {
                         Console.WriteLine("I need all the information to update a book.");
+                    }
+                    break;
+
+                case "O":
+                    Console.WriteLine("Enter the customer's name.");
+                    string? customersName = Console.ReadLine();
+                    Console.WriteLine("Add the customer's phone number");
+                    string? customersPhoneNumber = Console.ReadLine();
+                    if (!string.IsNullOrEmpty(customersName) && !string.IsNullOrEmpty(customersPhoneNumber))
+                    {
+                        libraryDB.AddCustomer(customersName, customersPhoneNumber);
+                    }
+                    else
+                    {
+                        Console.WriteLine("I need all the information to add a customer.");
                     }
                     break;
 

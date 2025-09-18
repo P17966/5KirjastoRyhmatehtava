@@ -40,18 +40,28 @@ public class LibraryDB
             CreateLoansTable.ExecuteNonQuery();
         }
     }
-    public void RemovingABook(string bookName)
+    public void RemovingABook(string booksTitle)
     {
         var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var command = connection.CreateCommand();
-        command.CommandText = @"
-        DELETE
-        FROM books
-        WHERE books.title = $name";
-        command.Parameters.AddWithValue("$name", bookName);
-        command.ExecuteNonQuery();
+        var pragma = connection.CreateCommand();
+        pragma.CommandText = "PRAGMA foreign_keys = ON;";
+        pragma.ExecuteNonQuery();
+
+        var deleteLoans = connection.CreateCommand();
+        deleteLoans.CommandText = @"
+            DELETE FROM Loans
+            WHERE BookId = (SELECT Id FROM Books WHERE title = $title)";
+        deleteLoans.Parameters.AddWithValue("$title", booksTitle);
+        deleteLoans.ExecuteNonQuery();
+
+        var deleteBook = connection.CreateCommand();
+        deleteBook.CommandText = @"
+            DELETE FROM Books
+            WHERE Title = $title";
+        deleteBook.Parameters.AddWithValue("$title", booksTitle);
+        deleteBook.ExecuteNonQuery();
 
         connection.Close();
     }
@@ -92,10 +102,10 @@ public class LibraryDB
             @"SELECT Books.title 
             FROM Customers 
             LEFT JOIN Loans 
-            ON Castomers.id = Loans.customerId
+            ON Customers.id = Loans.customerId
             LEFT JOIN Books
-            ON Loans.booksId = Books.id
-            WHERE Castomers.name = $Name
+            ON Loans.bookId = Books.id
+            WHERE Customers.name = $Name
             AND Loans.status = 'borrowed'";
             commandForCheck.Parameters.AddWithValue("$Name", name);
 
