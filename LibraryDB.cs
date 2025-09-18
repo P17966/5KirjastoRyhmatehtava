@@ -81,7 +81,7 @@ public class LibraryDB
             }
         }
     }
-    
+
     public void BorrowedBooks(string name)
     {
         using (var connection = new SqliteConnection(_connectionString))
@@ -98,7 +98,7 @@ public class LibraryDB
             WHERE Castomers.name = $Name
             AND Loans.status = 'borrowed'";
             commandForCheck.Parameters.AddWithValue("$Name", name);
-            
+
             using (var reader = commandForCheck.ExecuteReader())
             {
                 bool hasBooks = false;
@@ -202,7 +202,7 @@ public class LibraryDB
         }
     }
 
-     public void UpdateBook(string title, string newAuthor, string newCategory)
+    public void UpdateBook(string title, string newAuthor, string newCategory)
     {
         using (var connection = new SqliteConnection(_connectionString))
         {
@@ -241,6 +241,28 @@ public class LibraryDB
         {
             Console.WriteLine("Yhteysvirhe: " + ex.Message);
             return false;
+        }
+    }
+
+    public void AddCustomer(string name, string phoneNumber)
+    {
+        using (var connection = new SqliteConnection(_connectionString))
+        {
+            connection.Open();
+            var checkCommand = connection.CreateCommand();
+            checkCommand.CommandText = "SELECT id FROM Customers WHERE name=$Name";
+            checkCommand.Parameters.AddWithValue("$Name", name);
+            object? exists = checkCommand.ExecuteScalar();
+            if (exists != null)
+            {
+                Console.WriteLine("The customer already exists in the database.");
+                return;
+            }
+            var insertCommand = connection.CreateCommand();
+            insertCommand.CommandText = "INSERT INTO Customers (name, phoneNumber) VALUES ($Name, $PhoneNumber)";
+            insertCommand.Parameters.AddWithValue("Name", name);
+            insertCommand.Parameters.AddWithValue("PhoneNumber", phoneNumber);
+            insertCommand.ExecuteNonQuery();
         }
     }
 }
