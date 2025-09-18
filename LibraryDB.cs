@@ -90,12 +90,13 @@ public class LibraryDB
             var commandForCheck = connection.CreateCommand();
             commandForCheck.CommandText =
             @"SELECT Books.title 
-            FROM Castomers 
+            FROM Customers 
             LEFT JOIN Loans 
             ON Castomers.id = Loans.customerId
             LEFT JOIN Books
             ON Loans.booksId = Books.id
-            WHERE Castomers.name = $Name";
+            WHERE Castomers.name = $Name
+            AND Loans.status = 'borrowed'";
             commandForCheck.Parameters.AddWithValue("$Name", name);
             
             using (var reader = commandForCheck.ExecuteReader())
