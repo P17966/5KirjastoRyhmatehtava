@@ -212,31 +212,33 @@ public class LibraryDB
         }
     }
 
-    public void UpdateBook(int id, string title, string newAuthor, string newCategory)
+    public void UpdateBook(int updateBookId, string newTitle, string newAuthor, string newCategory)
     {
         using (var connection = new SqliteConnection(_connectionString))
         {
             connection.Open();
             var checkCommand = connection.CreateCommand();
-            checkCommand.CommandText = "SELECT id FROM Books WHERE id = @Id";
-            checkCommand.Parameters.AddWithValue("@Id", id);
+            checkCommand.CommandText = "SELECT id FROM Books WHERE id = @UpdateBookId";
+            checkCommand.Parameters.AddWithValue("@UpdateBookId", updateBookId);
 
             object? result = checkCommand.ExecuteScalar();
 
             if (result == null)
             {
-                Console.WriteLine("No book found with the given title.");
+                Console.WriteLine("No book found with the given Id.");
                 return;
             }
             var commandForUpdate = connection.CreateCommand();
             commandForUpdate.CommandText = @"
             UPDATE Books 
             SET author = @Author, category = @Category, title = @Title
-            WHERE id = @Id";
+            WHERE id = @UpdateBookId";
 
             commandForUpdate.Parameters.AddWithValue("@Author", newAuthor);
             commandForUpdate.Parameters.AddWithValue("@Category", newCategory);
-            commandForUpdate.Parameters.AddWithValue("@Title", title);
+            commandForUpdate.Parameters.AddWithValue("@Title", newTitle);
+            commandForUpdate.Parameters.AddWithValue("@UpdateBookId", updateBookId);
+
 
             int rowsAffected = commandForUpdate.ExecuteNonQuery();
             if (rowsAffected > 0)

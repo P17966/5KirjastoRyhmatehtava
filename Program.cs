@@ -12,7 +12,7 @@ class Program
                 "Do you want to add a book (A),\n" + //1
                 "Remove a book (R),\n" +             //2
                 "Do you want to add a customer (O),\n" +             //7
-                "Remove a customer (D),\n" +             
+                "Remove a customer (D),\n" +
                 "Update book information (P),\n" +   //6
                 "Borrow books (B), \n" +             //4
                 "Return books(T),\n" +               //5
@@ -98,6 +98,14 @@ class Program
                     break;
 
                 case "P":
+                    Console.WriteLine("Enter the book's Id.");
+                    string? input = Console.ReadLine();
+                    if (!int.TryParse(input, out int updateBookId))
+                    {
+                        Console.WriteLine("Invalid book Id.");
+                        break;
+                    }
+
                     Console.WriteLine("Enter the book's title.");
                     string? newTitle = Console.ReadLine();
                     Console.WriteLine("Enter the book's author.");
@@ -106,11 +114,11 @@ class Program
                     string? newCategory = Console.ReadLine();
                     if (!string.IsNullOrWhiteSpace(newTitle) && !string.IsNullOrWhiteSpace(newAuthor) && !string.IsNullOrWhiteSpace(newCategory))
                     {
-                        libraryDB.UpdateBook(newTitle, newAuthor, newCategory);
+                        libraryDB.UpdateBook(updateBookId, newTitle, newAuthor, newCategory);
                     }
                     else
                     {
-                        Console.WriteLine("I need all the information to update a book.");
+                        Console.WriteLine("All fields are required to update the book.");
                     }
                     break;
 
