@@ -55,7 +55,7 @@ class Program
                     return;
 
                 default:
-                    Console.WriteLine("Väärä valinta. Valitse: L, D, P, O, T, X ");
+                    Console.WriteLine("Wrong choice. Choose: L, D, P, O, T, X");
                     break;
             }
         }
