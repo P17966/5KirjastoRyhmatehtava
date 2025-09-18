@@ -81,7 +81,7 @@ public class LibraryDB
             }
         }
     }
-    
+
     public void BorrowedBooks(string name)
     {
         using (var connection = new SqliteConnection(_connectionString))
@@ -92,13 +92,13 @@ public class LibraryDB
             @"SELECT Books.title 
             FROM Customers 
             LEFT JOIN Loans 
-            ON Castomers.id = Loans.customerId
+            ON Customers.id = Loans.customerId
             LEFT JOIN Books
             ON Loans.booksId = Books.id
-            WHERE Castomers.name = $Name
+            WHERE Customers.name = $Name
             AND Loans.status = 'borrowed'";
             commandForCheck.Parameters.AddWithValue("$Name", name);
-            
+
             using (var reader = commandForCheck.ExecuteReader())
             {
                 bool hasBooks = false;
@@ -202,7 +202,7 @@ public class LibraryDB
         }
     }
 
-     public void UpdateBook(string title, string newAuthor, string newCategory)
+    public void UpdateBook(string title, string newAuthor, string newCategory)
     {
         using (var connection = new SqliteConnection(_connectionString))
         {
@@ -219,6 +219,36 @@ public class LibraryDB
 
             int rowsAffected = commandForUpdate.ExecuteNonQuery();
 
+        }
+    }
+    public void SearchLoanByBook(string title)
+    {
+        using (var connection = new SqliteConnection(_connectionString))
+        {
+            connection.Open();
+            var commandForSearch = connection.CreateCommand();
+            commandForSearch.CommandText = @"
+            SELECT Customers.name 
+            FROM Books 
+            JOIN Loans ON Books.id = Loans.bookId 
+            JOIN Customers ON Loans.customerId = Customers.id 
+            WHERE Books.title = $Title AND Loans.status = 'borrowed'";
+
+            commandForSearch.Parameters.AddWithValue("$Title", title);
+
+            using (var reader = commandForSearch.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    string customerName = reader.GetString(0);
+
+                    Console.WriteLine($"Customer Name: {customerName}");
+                }
+                else
+                {
+                    Console.WriteLine("Book is available for borrowing.");
+                }
+            }
         }
     }
 
@@ -243,4 +273,5 @@ public class LibraryDB
             return false;
         }
     }
+
 }
