@@ -221,7 +221,7 @@ public class LibraryDB
 
         }
     }
-}
+
 
     public bool Connect()       //Luotu tarjoamaan testitiedostoille pääsy tietokantaan.
     {
