@@ -40,18 +40,28 @@ public class LibraryDB
             CreateLoansTable.ExecuteNonQuery();
         }
     }
-    public void RemovingABook(string bookName)
+    public void RemovingABook(string booksTitle)
     {
         var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var command = connection.CreateCommand();
-        command.CommandText = @"
-        DELETE
-        FROM books
-        WHERE books.title = $name";
-        command.Parameters.AddWithValue("$name", bookName);
-        command.ExecuteNonQuery();
+        var pragma = connection.CreateCommand();
+        pragma.CommandText = "PRAGMA foreign_keys = ON;";
+        pragma.ExecuteNonQuery();
+
+        var deleteLoans = connection.CreateCommand();
+        deleteLoans.CommandText = @"
+            DELETE FROM Loans
+            WHERE BookId = (SELECT Id FROM Books WHERE title = $title)";
+        deleteLoans.Parameters.AddWithValue("$title", booksTitle);
+        deleteLoans.ExecuteNonQuery();
+
+        var deleteBook = connection.CreateCommand();
+        deleteBook.CommandText = @"
+            DELETE FROM Books
+            WHERE Title = $title";
+        deleteBook.Parameters.AddWithValue("$title", booksTitle);
+        deleteBook.ExecuteNonQuery();
 
         connection.Close();
     }
@@ -94,7 +104,7 @@ public class LibraryDB
             LEFT JOIN Loans 
             ON Customers.id = Loans.customerId
             LEFT JOIN Books
-            ON Loans.booksId = Books.id
+            ON Loans.bookId = Books.id
             WHERE Customers.name = $Name
             AND Loans.status = 'borrowed'";
             commandForCheck.Parameters.AddWithValue("$Name", name);
@@ -201,23 +211,43 @@ public class LibraryDB
             }
         }
     }
-
-    public void UpdateBook(string title, string newAuthor, string newCategory)
+    public void UpdateBook(int updateBookId, string newTitle, string newAuthor, string newCategory)
     {
         using (var connection = new SqliteConnection(_connectionString))
         {
             connection.Open();
+            var checkCommand = connection.CreateCommand();
+            checkCommand.CommandText = "SELECT id FROM Books WHERE id = @UpdateBookId";
+            checkCommand.Parameters.AddWithValue("@UpdateBookId", updateBookId);
+
+            object? result = checkCommand.ExecuteScalar();
+
+            if (result == null)
+            {
+                Console.WriteLine("No book found with the given Id.");
+                return;
+            }
             var commandForUpdate = connection.CreateCommand();
             commandForUpdate.CommandText = @"
             UPDATE Books 
-            SET author = @Author, category = @Category 
-            WHERE title = @Title";
+            SET author = @Author, category = @Category, title = @Title
+            WHERE id = @UpdateBookId";
 
             commandForUpdate.Parameters.AddWithValue("@Author", newAuthor);
             commandForUpdate.Parameters.AddWithValue("@Category", newCategory);
-            commandForUpdate.Parameters.AddWithValue("@Title", title);
+            commandForUpdate.Parameters.AddWithValue("@Title", newTitle);
+            commandForUpdate.Parameters.AddWithValue("@UpdateBookId", updateBookId);
+
 
             int rowsAffected = commandForUpdate.ExecuteNonQuery();
+            if (rowsAffected > 0)
+            {
+                Console.WriteLine("Book information updated successfully.");
+            }
+            else
+            {
+                Console.WriteLine("Failed to update the book.");
+            }
 
         }
     }
@@ -274,4 +304,26 @@ public class LibraryDB
         }
     }
 
+
+    public void AddCustomer(string name, string phoneNumber)
+    {
+        using (var connection = new SqliteConnection(_connectionString))
+        {
+            connection.Open();
+            var checkCommand = connection.CreateCommand();
+            checkCommand.CommandText = "SELECT id FROM Customers WHERE name=$Name";
+            checkCommand.Parameters.AddWithValue("$Name", name);
+            object? exists = checkCommand.ExecuteScalar();
+            if (exists != null)
+            {
+                Console.WriteLine("The customer already exists in the database.");
+                return;
+            }
+            var insertCommand = connection.CreateCommand();
+            insertCommand.CommandText = "INSERT INTO Customers (name, phoneNumber) VALUES ($Name, $PhoneNumber)";
+            insertCommand.Parameters.AddWithValue("Name", name);
+            insertCommand.Parameters.AddWithValue("PhoneNumber", phoneNumber);
+            insertCommand.ExecuteNonQuery();
+        }
+    }
 }

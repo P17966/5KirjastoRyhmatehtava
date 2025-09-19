@@ -9,11 +9,14 @@ class Program
         while (true)
         {
             Console.WriteLine(
-                "Do you want to add a book (A),\n" +
-                "Remove a book (R),\n" +
-                "Update book information (P),\n" +
-                "Borrow and return books (B),\n" +
-                "Check loan information for a book or person (C) \n" +
+                "Do you want to add a book (A),\n" + //1
+                "Remove a book (R),\n" +             //2
+                "Do you want to add a customer (O),\n" +             //7
+                "Remove a customer (D),\n" +
+                "Update book information (P),\n" +   //6
+                "Borrow books (B), \n" +             //4
+                "Return books(T),\n" +               //5
+                "Check a list of a customer's borrowed books (C) \n" + //3
                 "or Stop(X)?"
             );
 
@@ -48,6 +51,89 @@ class Program
                     else
                     {
                         Console.WriteLine("Book name cannot be empty.");
+                    }
+                    break;
+
+                case "C":
+                    Console.WriteLine("Write the customer's name");
+                    string? name = Console.ReadLine();
+                    if (!string.IsNullOrWhiteSpace(name))
+                    {
+                        libraryDB.BorrowedBooks(name);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Customers name cannot be empty.");
+                    }
+                    break;
+
+                case "B":
+                    Console.WriteLine("Enter the book.Id.");
+                    int bookId = Convert.ToInt32(Console.ReadLine());
+                    Console.WriteLine("Write the customer.Id");
+                    int customerId = Convert.ToInt32(Console.ReadLine());
+                    if (bookId != 0 && customerId != 0)
+                    {
+                        libraryDB.BookBorrowing(bookId, customerId);
+                    }
+                    else
+                    {
+                        Console.WriteLine("I need all the information to borrow a book.");
+                    }
+                    break;
+
+                case "T":
+                    Console.WriteLine("Enter the book.Id.");
+                    int returnedBookId = Convert.ToInt32(Console.ReadLine());
+                    Console.WriteLine("Write the customer.Id");
+                    int returnedCustomerId = Convert.ToInt32(Console.ReadLine());
+                    if (returnedBookId != 0 && returnedCustomerId != 0)
+                    {
+                        libraryDB.BookReturning(returnedBookId, returnedCustomerId);
+                    }
+                    else
+                    {
+                        Console.WriteLine("I need all the information to return a book.");
+                    }
+                    break;
+
+                case "P":
+                    Console.WriteLine("Enter the book's Id.");
+                    string? input = Console.ReadLine();
+                    if (!int.TryParse(input, out int updateBookId))
+                    {
+                        Console.WriteLine("Invalid book Id.");
+                        break;
+                    }
+
+                    Console.WriteLine("Enter the book's title.");
+                    string? newTitle = Console.ReadLine();
+                    Console.WriteLine("Enter the book's author.");
+                    string? newAuthor = Console.ReadLine();
+                    Console.WriteLine("Enter the book's category.");
+                    string? newCategory = Console.ReadLine();
+                    if (!string.IsNullOrWhiteSpace(newTitle) && !string.IsNullOrWhiteSpace(newAuthor) && !string.IsNullOrWhiteSpace(newCategory))
+                    {
+                        libraryDB.UpdateBook(updateBookId, newTitle, newAuthor, newCategory);
+                    }
+                    else
+                    {
+                        Console.WriteLine("All fields are required to update the book.");
+                    }
+                    break;
+
+                case "O":
+                    Console.WriteLine("Enter the customer's name.");
+                    string? customersName = Console.ReadLine();
+                    Console.WriteLine("Add the customer's phone number");
+                    string? customersPhoneNumber = Console.ReadLine();
+                    if (!string.IsNullOrEmpty(customersName) && !string.IsNullOrEmpty(customersPhoneNumber))
+                    {
+                        libraryDB.AddCustomer(customersName, customersPhoneNumber);
+                    }
+                    else
+                    {
+                        Console.WriteLine("I need all the information to add a customer.");
                     }
                     break;
 
