@@ -211,7 +211,6 @@ public class LibraryDB
             }
         }
     }
-
     public void UpdateBook(int updateBookId, string newTitle, string newAuthor, string newCategory)
     {
         using (var connection = new SqliteConnection(_connectionString))
@@ -252,6 +251,36 @@ public class LibraryDB
 
         }
     }
+    public void SearchLoanByBook(string title)
+    {
+        using (var connection = new SqliteConnection(_connectionString))
+        {
+            connection.Open();
+            var commandForSearch = connection.CreateCommand();
+            commandForSearch.CommandText = @"
+            SELECT Customers.name 
+            FROM Books 
+            JOIN Loans ON Books.id = Loans.bookId 
+            JOIN Customers ON Loans.customerId = Customers.id 
+            WHERE Books.title = $Title AND Loans.status = 'borrowed'";
+
+            commandForSearch.Parameters.AddWithValue("$Title", title);
+
+            using (var reader = commandForSearch.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    string customerName = reader.GetString(0);
+
+                    Console.WriteLine($"Customer Name: {customerName}");
+                }
+                else
+                {
+                    Console.WriteLine("Book is available for borrowing.");
+                }
+            }
+        }
+    }
 
 
     public bool Connect()       //Luotu tarjoamaan testitiedostoille pääsy tietokantaan.
@@ -274,6 +303,7 @@ public class LibraryDB
             return false;
         }
     }
+
 
     public void AddCustomer(string name, string phoneNumber)
     {
